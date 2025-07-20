@@ -1,0 +1,6 @@
+{
+  "editor.dropIntoEditor.preferences": [],
+  "files.exclude": {
+    "**/.next": false
+  }
+}

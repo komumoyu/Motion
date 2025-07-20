@@ -1,0 +1,254 @@
+=========================================
+NOTION-CLONE VERCEL デプロイ指示書
+=========================================
+作成日: 2025年1月21日
+基準ファイル: /Users/sasakidaigo/Notion/notion-clone/指示.txt
+
+=========================================
+前提条件
+=========================================
+
+✅ プロジェクトの現在状態:
+- notion-clone プロジェクトが完成済み
+- ビルドテスト成功
+- Convex、Clerk、EdgeStore設定済み
+- GitHubリポジトリが必要
+
+=========================================
+STEP 1: GitHubリポジトリ作成・アップロード
+=========================================
+
+【1-1. GitHubで新しいリポジトリ作成】
+1. GitHub.comにアクセス
+2. 「New repository」をクリック
+3. Repository name: 「notion-tutorial」または任意の名前
+4. Private に設定（推奨）
+5. 「Create repository」をクリック
+
+【1-2. ローカルプロジェクトをGitHubにプッシュ】
+1. ターミナルでプロジェクトディレクトリに移動:
+   ```bash
+   cd /Users/sasakidaigo/Notion/notion-clone
+   ```
+
+2. 開発サーバーを停止:
+   ```bash
+   # Ctrl+C で convex dev と npm run dev を停止
+   ```
+
+3. GitHubの指示に従ってプッシュ:
+   ```bash
+   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+=========================================
+STEP 2: Convexを本番環境用に準備
+=========================================
+
+【2-1. Convex本番環境作成】
+1. Convex Dashboard (https://dashboard.convex.dev/) にアクセス
+2. 使用中のプロジェクトを選択
+3. 「Production」タブをクリック
+4. 本番環境の作成を待つ
+
+【2-2. 本番環境の設定値取得】
+1. 「Settings」タブに移動
+2. 以下の値をコピー:
+   - **Deployment URL**: https://xxx.convex.cloud の形式
+   - **Deploy Key**: 「Generate new deploy key」でキー生成
+
+=========================================
+STEP 3: Vercelアカウント・プロジェクト作成
+=========================================
+
+【3-1. Vercelアカウント作成】
+1. https://vercel.com/ にアクセス
+2. 「Sign Up」で GitHub アカウントでサインアップ（推奨）
+
+【3-2. Vercelプロジェクト作成】
+1. Vercelダッシュボードで「Add New」→「Project」
+2. GitHubリポジトリから該当プロジェクトを選択
+3. 「Import」をクリック
+
+【3-3. プロジェクト設定】
+1. **Project Name**: 
+   - 元の名前を変更することを推奨
+   - 例: 「note-taking-app」
+   - ※ フィッシングサイト認定回避のため
+
+2. **Framework**: Next.js（自動検出されるはず）
+
+3. **Build and Output Settings**:
+   - 「Override」をONにする
+   - **Build Command**: 
+     ```
+     npm run build && npx convex deploy
+     ```
+
+=========================================
+STEP 4: 環境変数設定
+=========================================
+
+【4-1. 現在の環境変数をコピー】
+ローカルの .env.local ファイルの内容:
+```
+CONVEX_DEPLOYMENT=dev:shocking-oyster-440
+NEXT_PUBLIC_CONVEX_URL=https://shocking-oyster-440.convex.cloud
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_Y2xhc3NpYy1wZXJjaC05LmNsZXJrLmFjY291bnRzLmRldiQ
+CLERK_SECRET_KEY=sk_test_P3awSLjSuZGuoLmMEIrq4hMmQGVey2r26lpdVm9YQZ
+EDGE_STORE_ACCESS_KEY=VPaP7VpuFnFKFJRN93Zm9ApVvQIB320h
+EDGE_STORE_SECRET_KEY=TlB9nwfxo6VA6wghslyiupS6HKvyUTAHUjOMoCvaN20p134E
+```
+
+【4-2. Vercelで環境変数設定】
+1. Vercelプロジェクトの「Environment Variables」セクション
+2. 以下の変数を追加（本番用に値を変更）:
+
+```
+NEXT_PUBLIC_CONVEX_URL = [STEP2で取得した本番Deployment URL]
+CONVEX_DEPLOYMENT = [本番環境のdeployment名]
+CONVEX_DEPLOY_KEY = [STEP2で取得したDeploy Key]
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = [既存の値をそのまま]
+CLERK_SECRET_KEY = [既存の値をそのまま]
+EDGE_STORE_ACCESS_KEY = [既存の値をそのまま]
+EDGE_STORE_SECRET_KEY = [既存の値をそのまま]
+```
+
+**重要**: CONVEX_DEPLOY_KEY は新しく追加する変数です！
+
+=========================================
+STEP 5: デプロイ実行
+=========================================
+
+【5-1. 初回デプロイ】
+1. Vercelで「Deploy」ボタンをクリック
+2. ビルドプロセスを監視
+
+【5-2. エラーが発生した場合】
+もし「convex deploy key is not set」エラーが出た場合:
+
+1. Vercelプロジェクトの「Settings」→「Environment Variables」
+2. 「CONVEX_DEPLOY_KEY」が正しく設定されているか確認
+3. 「Deployments」→ 失敗したデプロイの「...」メニュー
+4. 「Redeploy」をクリック
+
+=========================================
+STEP 6: 動作確認
+=========================================
+
+【6-1. 基本機能テスト】
+1. デプロイ完了後、Vercelの提供URLにアクセス
+2. 以下の機能をテスト:
+   - ✅ ログイン（Clerk認証）
+   - ✅ ドキュメント作成・編集
+   - ✅ リアルタイム同期
+   - ✅ 画像アップロード（EdgeStore）
+   - ✅ データベース機能
+   - ✅ 記事機能
+
+【6-2. 既知の問題と修正】
+もしランディングページで背景色の問題があれば:
+
+1. `app/(marketing)/page.tsx` を編集:
+   ```tsx
+   // className に dark:bg-dark などの背景色を追加
+   ```
+
+2. 変更をコミット・プッシュ:
+   ```bash
+   git add .
+   git commit -m "fix: ランディングページ背景色修正"
+   git push
+   ```
+
+3. Vercelが自動でリデプロイを実行
+
+=========================================
+STEP 7: 継続的デプロイ設定
+=========================================
+
+【自動デプロイ】
+✅ GitHubにpushすると自動でVercelがデプロイ
+✅ Pull Request作成で Preview デプロイが作成される
+✅ main ブランチへのマージで本番デプロイ
+
+【カスタムドメイン（オプション）】
+1. Vercel「Settings」→「Domains」
+2. 独自ドメインを追加可能
+
+=========================================
+トラブルシューティング
+=========================================
+
+【よくある問題】
+
+■ ビルドエラー: "Module not found"
+→ 不足しているコンポーネントを追加
+→ package.json の dependencies を確認
+
+■ Convex接続エラー
+→ 環境変数 NEXT_PUBLIC_CONVEX_URL を確認
+→ Convex本番環境が正しく作成されているか確認
+
+■ 認証エラー
+→ Clerk環境変数を確認
+→ ClerkダッシュボードでDomain設定を確認
+
+■ 画像アップロードエラー
+→ EdgeStore環境変数を確認
+→ EdgeStoreダッシュボードでDomain設定を確認
+
+【デバッグ方法】
+1. Vercelの「Functions」タブでログ確認
+2. ブラウザの Developer Tools でエラー確認
+3. Convex Dashboard でデータベース状態確認
+
+=========================================
+完了チェックリスト
+=========================================
+
+□ GitHubリポジトリ作成・プッシュ完了
+□ Convex本番環境作成完了
+□ Vercelプロジェクト作成完了
+□ 環境変数設定完了（CONVEX_DEPLOY_KEY含む）
+□ ビルドコマンド設定完了
+□ デプロイ成功
+□ ログイン機能テスト完了
+□ ドキュメント機能テスト完了
+□ 画像アップロード機能テスト完了
+□ データベース機能テスト完了
+□ 記事機能テスト完了
+
+=========================================
+参考リンク
+=========================================
+
+- Convex Production Docs: https://docs.convex.dev/production/hosting/vercel
+- Vercel Deployment Guide: https://vercel.com/docs/deployments/overview
+- Clerk Production Setup: https://clerk.com/docs/deployments/overview
+- EdgeStore Setup: https://edgestore.dev/docs
+
+=========================================
+補足事項
+=========================================
+
+【セキュリティ】
+- 本番環境では必ず強力な秘密鍵を使用
+- .env.local は絶対にGitにコミットしない
+- Vercelの環境変数は暗号化されて保存される
+
+【パフォーマンス】
+- Vercelの Edge Functions で高速化
+- Convex で最適化されたリアルタイム同期
+- EdgeStore CDN で画像高速配信
+
+【コスト】
+- Vercel Hobby プラン: 無料（個人利用）
+- Convex: 月間無料枠あり
+- EdgeStore: 月間無料枠あり
+
+=========================================
+END OF INSTRUCTIONS
+=========================================
