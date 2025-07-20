@@ -8,7 +8,7 @@ import {
     SuggestionMenuController,
     getDefaultReactSlashMenuItems
 } from "@blocknote/react";
-import { DatabaseBlock } from "./editor/database-block";
+// import { DatabaseBlock } from "./editor/database-block";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useTheme } from "next-themes";
 import { 
@@ -63,21 +63,21 @@ const Editor = ({
     const [showDatabaseEmbed, setShowDatabaseEmbed] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // データベースブロックを挿入する関数
-    const handleDatabaseSelected = (databaseId: Id<"documents">) => {
-        editor.insertBlocks([
-            {
-                type: "database",
-                props: {
-                    databaseId: databaseId,
-                    maxRows: 5,
-                    showFullView: true,
-                },
-            },
-        ], editor.getTextCursorPosition().block, "after");
+    // データベースブロック機能を一時的に無効化
+    // const handleDatabaseSelected = (databaseId: Id<"documents">) => {
+    //     editor.insertBlocks([
+    //         {
+    //             type: "database",
+    //             props: {
+    //                 databaseId: databaseId,
+    //                 maxRows: 5,
+    //                 showFullView: true,
+    //             },
+    //         },
+    //     ], editor.getTextCursorPosition().block, "after");
         
-        setShowDatabaseEmbed(false);
-    };
+    //     setShowDatabaseEmbed(false);
+    // };
 
     // メニュー外側クリックで閉じる
     useEffect(() => {
@@ -101,11 +101,11 @@ const Editor = ({
         return response.url;
     }
 
-    // カスタムスキーマの作成
+    // 標準スキーマを使用（カスタムブロックは一時的に無効化）
     const schema = BlockNoteSchema.create({
         blockSpecs: {
             ...defaultBlockSpecs,
-            database: DatabaseBlock,
+            // database: DatabaseBlock, // 一時的にコメントアウト
         },
     });
 
@@ -117,22 +117,21 @@ const Editor = ({
         console.log('Existing groups:', [...new Set(defaultItems.map(item => item.group))]);
         console.log('Default items:', defaultItems.map(item => ({ title: item.title, group: item.group })));
         
-        // データベースアイテムを作成
-        const databaseItem = {
-            title: "Database",
-            onItemClick: () => {
-                // データベース選択ダイアログを表示
-                setShowDatabaseEmbed(true);
-            },
-            aliases: ["database", "db", "table"],
-            group: "CustomBlocks", // 完全にユニークなグループ名
-            icon: <Database size={18} />,
-            subtext: "Insert a database for structured data",
-            key: "notion-clone-custom-database-item"
-        };
+        // カスタムブロックを一時的に無効化
+        // const databaseItem = {
+        //     title: "Database",
+        //     onItemClick: () => {
+        //         setShowDatabaseEmbed(true);
+        //     },
+        //     aliases: ["database", "db", "table"],
+        //     group: "CustomBlocks",
+        //     icon: <Database size={18} />,
+        //     subtext: "Insert a database for structured data",
+        //     key: "notion-clone-custom-database-item"
+        // };
 
-        // デフォルトアイテムにカスタムデータベースアイテムを追加
-        return [...defaultItems, databaseItem];
+        // 標準アイテムのみを返す
+        return defaultItems;
     };
 
     const editor = useCreateBlockNote({
@@ -186,13 +185,13 @@ const Editor = ({
                 />
             </BlockNoteView>
             
-            {/* データベース埋め込みダイアログ */}
-            {showDatabaseEmbed && documentId && (
+            {/* データベース埋め込みダイアログ - 一時的に無効化 */}
+            {/* {showDatabaseEmbed && documentId && (
                 <DatabaseEmbedButton
                     documentId={documentId}
                     onEmbed={handleDatabaseSelected}
                 />
-            )}
+            )} */}
         </div>
     )
 };
