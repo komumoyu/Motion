@@ -9,7 +9,6 @@ import {
     getDefaultReactSlashMenuItems
 } from "@blocknote/react";
 import { DatabaseBlock } from "./editor/database-block";
-import { ImageBlock } from "./editor/image-block";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useTheme } from "next-themes";
 import { 
@@ -102,12 +101,11 @@ const Editor = ({
         return response.url;
     }
 
-    // カスタムスキーマの作成（デフォルトのimageを置き換え）
+    // カスタムスキーマの作成
     const schema = BlockNoteSchema.create({
         blockSpecs: {
             ...defaultBlockSpecs,
             database: DatabaseBlock,
-            image: ImageBlock, // デフォルトのimageブロックを置き換え
         },
     });
 
@@ -133,31 +131,8 @@ const Editor = ({
             key: "notion-clone-custom-database-item"
         };
 
-        // カスタムイメージアイテムを明示的に追加
-        const customImageItem = {
-            title: "Image Preview",
-            onItemClick: () => {
-                editor.insertBlocks([
-                    {
-                        type: "image",
-                        props: {
-                            url: "",
-                            caption: "",
-                        },
-                    },
-                ], editor.getTextCursorPosition().block, "after");
-            },
-            aliases: ["image", "img", "picture", "photo", "preview"],
-            group: "CustomBlocks",
-            icon: <Image size={18} />,
-            subtext: "Upload image with preview and caption",
-            key: "notion-clone-custom-image-item"
-        };
-        
-        // デフォルトのimageアイテムを除外して、カスタムアイテムを追加
-        const filteredItems = defaultItems.filter(item => item.title !== "Image");
-        
-        return [...filteredItems, databaseItem, customImageItem];
+        // デフォルトアイテムにカスタムデータベースアイテムを追加
+        return [...defaultItems, databaseItem];
     };
 
     const editor = useCreateBlockNote({
