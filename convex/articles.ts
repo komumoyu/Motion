@@ -142,7 +142,7 @@ export const updateArticle = mutation({
         // 記事データの更新
         const updatedArticleData = {
             ...existingArticle.articleData,
-            ...(publishDate && { publishDate }),
+            publishDate: publishDate || existingArticle.articleData?.publishDate || new Date().toISOString().split('T')[0],
             ...(thumbnail !== undefined && { thumbnail }),
             ...(slug && { slug }),
             ...(isPublishedToWebDB !== undefined && { isPublishedToWebDB }),
