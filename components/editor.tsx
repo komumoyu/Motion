@@ -143,7 +143,6 @@ const Editor = ({
                         props: {
                             url: "",
                             caption: "",
-                            width: "100%",
                         },
                     },
                 ], editor.getTextCursorPosition().block, "after");
