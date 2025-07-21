@@ -123,7 +123,9 @@ const Editor = ({
         };
 
         // カスタムアイテムを含めて返す
-        return [...defaultItems, databaseItem];
+        const allItems = [...defaultItems, databaseItem];
+        console.log('All items with database:', allItems.map(item => ({ title: item.title, group: item.group })));
+        return allItems;
     };
 
     const editor = useCreateBlockNote({
@@ -177,13 +179,13 @@ const Editor = ({
                 />
             </BlockNoteView>
             
-            {/* データベース埋め込みダイアログ - 一時的に無効化 */}
-            {/* {showDatabaseEmbed && documentId && (
+            {/* データベース埋め込みダイアログ */}
+            {showDatabaseEmbed && documentId && (
                 <DatabaseEmbedButton
                     documentId={documentId}
                     onEmbed={handleDatabaseSelected}
                 />
-            )} */}
+            )}
         </div>
     )
 };
