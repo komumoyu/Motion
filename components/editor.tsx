@@ -105,15 +105,10 @@ const Editor = ({
     const getCustomSlashMenuItems = (editor: any) => {
         const defaultItems = getDefaultReactSlashMenuItems(editor);
         
-        // デバッグ: 既存のグループとアイテムを確認
-        console.log('Existing groups:', [...new Set(defaultItems.map(item => item.group))]);
-        console.log('Default items:', defaultItems.map(item => ({ title: item.title, group: item.group })));
-        
         // データベースブロック用のスラッシュメニューアイテム
         const databaseItem = {
             title: "Database",
             onItemClick: () => {
-                console.log('Database item clicked!');
                 setShowDatabaseEmbed(true);
             },
             aliases: ["database", "db", "table"],
@@ -123,14 +118,8 @@ const Editor = ({
             key: "notion-clone-custom-database-item"
         };
 
-        console.log('Creating database item:', databaseItem);
-        console.log('showDatabaseEmbed state:', showDatabaseEmbed);
-
         // カスタムアイテムを含めて返す
-        const allItems = [...defaultItems, databaseItem];
-        console.log('All items with database:', allItems.length, 'items');
-        console.log('Database item included:', allItems.find(item => item.title === 'Database'));
-        return allItems;
+        return [...defaultItems, databaseItem];
     };
 
     const editor = useCreateBlockNote({
