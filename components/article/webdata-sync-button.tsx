@@ -25,6 +25,7 @@ export const WebDataSyncButton = ({
     const [syncResult, setSyncResult] = useState<any>(null);
 
     const exportAll = useQuery(api.webdataExport.exportAllArticlesToWebDataBase);
+    const debugArticles = useQuery(api.webdataExport.debugAllArticles);
     const exportSingle = useMutation(api.webdataExport.exportArticleToWebDataBase);
 
     const syncToWebDataBase = async () => {
@@ -43,6 +44,10 @@ export const WebDataSyncButton = ({
                 // 全記事の同期
                 if (!exportAll) {
                     throw new Error("記事データの取得に失敗しました");
+                }
+
+                if (!exportAll.articles || exportAll.articles.length === 0) {
+                    throw new Error("同期する公開済み記事がありません。記事を公開してから再度お試しください。");
                 }
 
                 syncData = {
@@ -65,6 +70,9 @@ export const WebDataSyncButton = ({
             }
 
             // デバッグ: 送信データをログ出力
+            console.log('Debug - All articles:', debugArticles?.articles);
+            console.log('Export data check:', exportAll);
+            console.log('Articles count:', exportAll?.articles?.length || 0);
             console.log('Sending data to API:', syncData);
             console.log('API endpoint:', apiEndpoint);
 
@@ -80,11 +88,23 @@ export const WebDataSyncButton = ({
             console.log('Response status:', response.status);
             console.log('Response headers:', response.headers);
 
+            // レスポンステキストを取得してデバッグ
+            const responseText = await response.text();
+            console.log('Raw response text:', responseText);
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const result = await response.json();
+            // JSONパースを試行
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch (jsonError) {
+                console.error('Client JSON parse error:', jsonError);
+                console.error('Response was not valid JSON:', responseText);
+                throw new Error('Server returned invalid JSON: ' + responseText.substring(0, 100));
+            }
             
             if (result.success) {
                 setSyncResult(result);
@@ -145,12 +165,33 @@ export const WebDataSyncButton = ({
                         </p>
                     </div>
 
-                    {isSyncAll && exportAll && (
+                    {isSyncAll && (
                         <div className="space-y-3">
+                            <h4 className="font-medium">記事状態の確認</h4>
+                            
+                            {/* デバッグ情報表示 */}
+                            {debugArticles && (
+                                <div className="bg-yellow-50 p-4 rounded-lg">
+                                    <h5 className="font-medium text-sm mb-2">全記事の状態:</h5>
+                                    <div className="space-y-1 text-xs">
+                                        {debugArticles.articles.map((article: any, index: number) => (
+                                            <div key={index} className="flex items-center justify-between">
+                                                <span>{article.title || 'タイトルなし'}</span>
+                                                <span className={`px-2 py-1 rounded ${
+                                                    article.isPublished ? 'bg-green-200' : 'bg-red-200'
+                                                }`}>
+                                                    {article.isPublished ? '公開済み' : '未公開'}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            
                             <h4 className="font-medium">同期対象の記事</h4>
                             <div className="bg-gray-50 p-4 rounded-lg max-h-40 overflow-y-auto">
                                 <div className="space-y-2">
-                                    {exportAll.articles.map((article: any, index: number) => (
+                                    {exportAll?.articles.map((article: any, index: number) => (
                                         <div key={index} className="flex items-center justify-between text-sm">
                                             <span className="font-medium">{article.title}</span>
                                             <span className="text-muted-foreground">{article.date}</span>
@@ -159,7 +200,7 @@ export const WebDataSyncButton = ({
                                 </div>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                                {exportAll.articles.length}件の記事が同期されます
+                                {exportAll?.articles.length || 0}件の記事が同期されます
                             </p>
                         </div>
                     )}

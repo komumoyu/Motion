@@ -175,6 +175,35 @@ export const exportArticleToWebDataBase = mutation({
     },
 });
 
+// デバッグ用：すべての記事の状態を確認
+export const debugAllArticles = query({
+    args: {},
+    handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) return { articles: [] };
+        
+        const userId = identity.subject;
+        const allArticles = await ctx.db
+            .query("documents")
+            .filter((q) => 
+                q.and(
+                    q.eq(q.field("userId"), userId),
+                    q.eq(q.field("type"), "article")
+                )
+            )
+            .collect();
+            
+        return {
+            articles: allArticles.map(article => ({
+                title: article.title,
+                isPublished: article.isPublished,
+                isArchived: article.isArchived,
+                articleData: article.articleData
+            }))
+        };
+    },
+});
+
 // すべての公開記事をWebData_Base形式でエクスポート
 export const exportAllArticlesToWebDataBase = query({
     args: {},
