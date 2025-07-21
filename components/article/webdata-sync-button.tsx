@@ -64,6 +64,10 @@ export const WebDataSyncButton = ({
                 };
             }
 
+            // デバッグ: 送信データをログ出力
+            console.log('Sending data to API:', syncData);
+            console.log('API endpoint:', apiEndpoint);
+
             // WebData_Base APIに送信
             const response = await fetch(apiEndpoint, {
                 method: 'POST',
@@ -72,6 +76,9 @@ export const WebDataSyncButton = ({
                 },
                 body: JSON.stringify(syncData)
             });
+
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
