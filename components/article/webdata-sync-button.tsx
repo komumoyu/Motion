@@ -20,7 +20,7 @@ export const WebDataSyncButton = ({
     articleId 
 }: WebDataSyncButtonProps) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [apiEndpoint, setApiEndpoint] = useState("https://your-domain.lolipop.jp/api/sync-articles.php");
+    const [apiEndpoint, setApiEndpoint] = useState("https://komumoyu.com/api/sync-articles.php");
     const [isLoading, setIsLoading] = useState(false);
     const [syncResult, setSyncResult] = useState<any>(null);
 
@@ -130,7 +130,7 @@ export const WebDataSyncButton = ({
                             id="api-endpoint"
                             value={apiEndpoint}
                             onChange={(e) => setApiEndpoint(e.target.value)}
-                            placeholder="https://your-domain.lolipop.jp/api/sync-articles.php"
+                            placeholder="https://komumoyu.com/api/sync-articles.php"
                             disabled={isLoading}
                         />
                         <p className="text-sm text-muted-foreground">
