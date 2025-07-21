@@ -25,7 +25,6 @@ export const WebDataSyncButton = ({
     const [syncResult, setSyncResult] = useState<any>(null);
 
     const exportAll = useQuery(api.webdataExport.exportAllArticlesToWebDataBase);
-    // const debugArticles = useQuery(api.webdataExport.debugAllArticles);
     const exportSingle = useMutation(api.webdataExport.exportArticleToWebDataBase);
 
     const syncToWebDataBase = async () => {
@@ -70,7 +69,6 @@ export const WebDataSyncButton = ({
             }
 
             // デバッグ: 送信データをログ出力
-            // console.log('Debug - All articles:', debugArticles?.articles);
             console.log('Export data check:', exportAll);
             console.log('Articles count:', exportAll?.articles?.length || 0);
             console.log('Sending data to API:', syncData);
