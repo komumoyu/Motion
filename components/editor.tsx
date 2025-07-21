@@ -113,6 +113,7 @@ const Editor = ({
         const databaseItem = {
             title: "Database",
             onItemClick: () => {
+                console.log('Database item clicked!');
                 setShowDatabaseEmbed(true);
             },
             aliases: ["database", "db", "table"],
@@ -122,9 +123,13 @@ const Editor = ({
             key: "notion-clone-custom-database-item"
         };
 
+        console.log('Creating database item:', databaseItem);
+        console.log('showDatabaseEmbed state:', showDatabaseEmbed);
+
         // カスタムアイテムを含めて返す
         const allItems = [...defaultItems, databaseItem];
-        console.log('All items with database:', allItems.map(item => ({ title: item.title, group: item.group })));
+        console.log('All items with database:', allItems.length, 'items');
+        console.log('Database item included:', allItems.find(item => item.title === 'Database'));
         return allItems;
     };
 
