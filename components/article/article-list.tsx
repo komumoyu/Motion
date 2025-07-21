@@ -15,6 +15,8 @@ import {
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { ArticleCreator } from "./article-creator";
+import { WebDataExportButton } from "./webdata-export-button";
+import { WebDataSyncButton } from "./webdata-sync-button";
 import { cn } from "@/lib/utils";
 
 export const ArticleList = () => {
@@ -56,12 +58,16 @@ export const ArticleList = () => {
                         WebData_Base連携用の記事を管理できます
                     </p>
                 </div>
-                <ArticleCreator>
-                    <Button>
-                        <Plus className="h-4 w-4 mr-2" />
-                        新しい記事
-                    </Button>
-                </ArticleCreator>
+                <div className="flex items-center gap-2">
+                    <WebDataSyncButton variant="sync_all" />
+                    <WebDataExportButton variant="all" />
+                    <ArticleCreator>
+                        <Button>
+                            <Plus className="h-4 w-4 mr-2" />
+                            新しい記事
+                        </Button>
+                    </ArticleCreator>
+                </div>
             </div>
 
             {/* 記事リスト */}
@@ -154,6 +160,10 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
 
                 {/* 右側: アクション */}
                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <WebDataExportButton 
+                        articleId={article._id} 
+                        variant="single" 
+                    />
                     <Button
                         variant="ghost"
                         size="sm"
